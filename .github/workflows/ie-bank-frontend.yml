@@ -30,6 +30,7 @@ jobs:
         run: |
           npm install
           npm run build -- --mode development --dest dist-dev ## this command will build the vue.js app using .env.development variables into the dest-div/ folder
+          npm run build -- --mode uat --dest dist-uat ## this command will build the vue.js app using .env.uat variables into the dest-div/ folder
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
