@@ -1,80 +1,82 @@
-
 <template>
-  
-  <div class="home-page">
-    <header>
-      <h1>Welcome to <span class="bank-name">IE Bank Corp</span></h1>
-      <p class="slogan">Where Your Financial Goals Come to Life</p>
-    </header>
-    <main>
-      <p class="description">
-        Manage your bank accounts efficiently with our user-friendly web application.
-      </p>
-      <p class="about">
-        At <span class="bank-name">IE Bank Corp</span>, we are dedicated to providing you with exceptional financial solutions tailored to your unique needs. With a commitment to security, innovation, and personalized service, we empower you to achieve your financial dreams. Discover a world of convenience and trust with <span class="bank-name">IE Bank Corp</span>.
-      </p>
-      <router-link to="/accounts" class="btn">View Accounts</router-link>
-
-    </main>
+  <div class="homepage">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12">
+          <h1 class="title">Welcome to IE Bank</h1>
+          <p class="catch-phrase">Banking for a Better Tomorrow</p>
+          <div class="button-container">
+            <button class="btn btn-primary btn-lg" @click="$router.push('/accounts')">Go to Accounts</button>
+            <button class="btn btn-secondary btn-lg" @click="$router.push('/skull')">Go to Skull Page</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-
 </template>
 
-<script>
+<style>
+.homepage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url('/public/bank-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+  overflow: hidden;
+}
 
-export default {
-  name: 'HomePage',
-  components: {
-  },
-};
-</script>
-
-
-<style scoped>
-.home-page {
+.title {
+  font-size: 4rem;
   text-align: center;
-  padding: 20px;
-  background-color: #d2e2d3; 
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+  animation: titleAnimation 3s ease-in-out 1.5s forwards;
+  transform: translateY(-100%);
+  margin-bottom: 2rem;
 }
 
-.bank-name {
-  color: #007bff;
-  font-weight: bold;
+.catch-phrase {
+  font-size: 1.5rem;
+  text-align: center;
+  font-weight: 400;
+  animation: catchPhraseAnimation 3s ease-in-out 1.5s forwards;
+  opacity: 0;
+  margin-top: 0.5rem;
 }
 
-.slogan {
-  font-size: 20px;
-  margin-top: 10px;
-  color: #555;
+@keyframes titleAnimation {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-.description {
-  font-size: 18px;
-  margin-bottom: 20px;
-  color: #333;
+@keyframes catchPhraseAnimation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-.about {
-  font-size: 16px;
-  margin-bottom: 20px;
-  color: #666;
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin-top: 0.5rem;
 }
 
 .btn {
-  display: inline-block;
-  padding: 10px 20px;
-  font-size: 16px;
-  text-align: center;
-  text-decoration: none;
-  background-color: #6ea0d4;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  display: block;
 }
 
-.btn:hover {
-  background-color: #0056b3;
-}
 </style>
