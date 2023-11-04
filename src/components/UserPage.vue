@@ -19,6 +19,14 @@
           >
             Create Account
           </button>
+          <br />
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm"
+            v-b-modal.account-modal
+          >
+            Transfer money between accounts
+          </button>
           <br /><br />
           <table class="table table-hover">
             <thead>
@@ -322,4 +330,7 @@ export default {
     this.RESTgetAccounts();
   },
 };
+
+
+
 </script>
