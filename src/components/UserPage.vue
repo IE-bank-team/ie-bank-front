@@ -164,7 +164,7 @@
 <script>
 import axios from "axios";
 export default {
-  name: "AppAccounts",
+  name: "UserPage",
   data() {
     return {
       accounts: [],
