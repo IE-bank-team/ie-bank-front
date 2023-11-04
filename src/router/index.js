@@ -1,19 +1,13 @@
-<<<<<<< Updated upstream
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Skull from '../components/Skull.vue'
-import UserPage from '../components/UserPage.vue'
-import UserLogin from '../components/UserLogin.vue'
-import HomePage from '../components/HomePage.vue'
-=======
+
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Skull from "../components/Skull.vue";
 import UserPage from "../components/UserPage.vue";
+import UserLogin from '../components/UserLogin.vue'
 import AdminLogin from "../components/AdminLogin.vue";
 import AdminPage from "../components/AdminPage.vue";
 import HomePage from "../components/HomePage.vue";
->>>>>>> Stashed changes
+
 
 Vue.use(VueRouter);
 
@@ -29,15 +23,15 @@ const routes = [
     component: UserPage,
   },
   {
-<<<<<<< Updated upstream
     path: '/userlogin',
     name: 'UserLogin',
     component: UserLogin
-=======
+  },
+  
+  {
     path: "/adminlogin",
     name: "AdminLogin",
     component: AdminLogin,
->>>>>>> Stashed changes
   },
  
   {
