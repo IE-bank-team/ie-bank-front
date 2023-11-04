@@ -6,20 +6,15 @@
           <h1 class="title">Welcome to IE Bank</h1>
           <p class="catch-phrase">Banking for a Better Tomorrow</p>
           <div class="button-container">
-<<<<<<< Updated upstream
-            <button class="btn btn-primary btn-lg" @click="$router.push('/userlogin')">Login as User</button>
-            <button class="btn btn-primary btn-lg" @click="$router.push('/adminlogin')">Login as Admin</button>
-            <button class="btn btn-secondary btn-lg" @click="$router.push('/skull')">Go to Skull Page</button>
-=======
             <button
               class="btn btn-primary btn-lg"
-              @click="$router.push('/user')"
+              @click="$router.push('/userlogin')"
             >
               Login as User
             </button>
             <button
               class="btn btn-primary btn-lg"
-              @click="$router.push('/adminLogin')"
+              @click="$router.push('/adminlogin')"
             >
               Login as Admin
             </button>
@@ -29,7 +24,6 @@
             >
               Go to Skull Page
             </button>
->>>>>>> Stashed changes
           </div>
         </div>
       </div>
