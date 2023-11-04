@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Skull from '../components/Skull.vue'
-import AppAccounts from '../components/AppAccounts.vue'
+import UserPage from '../components/UserPage.vue'
+import AdminPage from '../components/AdminPage.vue'
 import HomePage from '../components/HomePage.vue'
+
 
 Vue.use(VueRouter)
 
@@ -13,9 +15,14 @@ const routes = [
     component: Skull
   },
   {
-    path: '/accounts',
-    name: 'AppAccounts',
-    component: AppAccounts
+    path: '/user',
+    name: 'UserPage',
+    component: UserPage
+  },
+  {
+    path: '/admin',
+    name: 'AdminPage',
+    component: AdminPage
   },
   {
     path: '/',

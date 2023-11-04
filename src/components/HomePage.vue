@@ -6,7 +6,8 @@
           <h1 class="title">Welcome to IE Bank</h1>
           <p class="catch-phrase">Banking for a Better Tomorrow</p>
           <div class="button-container">
-            <button class="btn btn-primary btn-lg" @click="$router.push('/accounts')">Go to Accounts</button>
+            <button class="btn btn-primary btn-lg" @click="$router.push('/user')">Login as User</button>
+            <button class="btn btn-primary btn-lg" @click="$router.push('/admin')">Login as Admin</button>
             <button class="btn btn-secondary btn-lg" @click="$router.push('/skull')">Go to Skull Page</button>
           </div>
         </div>
