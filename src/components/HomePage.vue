@@ -70,6 +70,7 @@
 
 .button-container {
   display: flex;
+  flex-direction: column; 
   justify-content: center;
   align-items: center;
   height: 100%;
@@ -77,7 +78,7 @@
 }
 
 .btn {
-  display: block;
+  display: block; 
+  margin: 0.5rem 0; 
 }
-
 </style>
