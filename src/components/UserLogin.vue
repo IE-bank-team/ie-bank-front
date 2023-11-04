@@ -4,10 +4,21 @@
       <div class="row">
         <div class="col-sm-12">
           <h1 class="title">Welcome to IE Bank</h1>
-          <p class="catch-phrase">Login to your user account</p>
-          <div class="button-container">
-            
-        <!-- ici pour les identifiants -->
+          <p class="catch-phrase">User Login</p>
+          <div class="login-container">
+            <form @submit.prevent="login">
+              <div>
+                <label for="username">Username: </label>
+                <input type="text" id="username" v-model="username" />
+              </div>
+              <div>
+                <label for="password">Password: </label>
+                <input type="password" id="password" v-model="password" />
+              </div>
+              <button type="submit">Login</button>
+            </form>
+            <p v-if="loggedIn">Logged in successfully!</p>
+            <p v-if="error">Invalid username or password.</p>
           </div>
         </div>
       </div>
@@ -21,7 +32,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-image: url('/public/bank-bg.jpg');
+  background-image: url("/public/bank-bg.jpg");
   background-size: cover;
   background-position: center;
   color: #fff;
@@ -69,7 +80,7 @@
 
 .button-container {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100%;
@@ -77,8 +88,41 @@
 }
 
 .btn {
-  display: block; 
-  margin: 0.5rem 0; 
+  display: block;
+  margin: 0.5rem 0;
 }
 
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 </style>
+<script>
+export default {
+  data() {
+    return {
+      username: "",
+      password: "",
+      loggedIn: false,
+      error: false,
+    };
+  },
+  methods: {
+    login() {
+      // Replace the following if-else conditions with your own logic.
+      if (this.username === "cris" && this.password === "test") {
+        this.loggedIn = true;
+        this.error = false;
+
+        // Redirect to the dashboard component after successful login
+        this.$router.push("/user");
+      } else {
+        this.loggedIn = false;
+        this.error = true;
+      }
+    },
+  },
+};
+</script>

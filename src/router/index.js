@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Skull from '../components/Skull.vue'
 import UserPage from '../components/UserPage.vue'
-import AdminPage from '../components/AdminPage.vue'
+import UserLogin from '../components/UserLogin.vue'
 import HomePage from '../components/HomePage.vue'
 
 
@@ -20,10 +20,11 @@ const routes = [
     component: UserPage
   },
   {
-    path: '/admin',
-    name: 'AdminPage',
-    component: AdminPage
+    path: '/userlogin',
+    name: 'UserLogin',
+    component: UserLogin
   },
+ 
   {
     path: '/',
     name: 'HomePage',
