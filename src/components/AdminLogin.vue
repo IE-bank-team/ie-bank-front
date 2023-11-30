@@ -3,8 +3,8 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-12">
-          <h1 class="title">Welcome to IE Bank</h1>
-          <p class="catch-phrase">Admin Login</p>
+          <h1 class="title">Admin Login</h1>
+          <!-- <p class="catch-phrase">Admin Login</p> -->
           <div class="login-container">
             <form @submit.prevent="login">
               <div>
