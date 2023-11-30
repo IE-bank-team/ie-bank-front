@@ -1,86 +1,326 @@
 <template>
-  <div class="homepage">
+  <div class="jumbotron vertical-center">
     <div class="container">
       <div class="row">
         <div class="col-sm-12">
-          <h1 class="title">Admin Portal</h1>
-          <p class="catch-phrase">Manage Users</p>
+          <h1>Admin Portal</h1>
+          <hr />
+          <p>Here you can view, create, update and delete bank users.</p>
+          <!-- Allert Message -->
+          <b-alert v-if="showMessage" variant="success" show>{{
+            message
+          }}</b-alert>
+          <!-- b-alert v-if="error" variant="danger" show>{{ error }}</b-alert-->
+
+          <button
+            type="button"
+            class="btn btn-success btn-sm"
+            v-b-modal.account-modal
+          >
+            Create Account
+          </button>
+          <br />
+
+          <br /><br />
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Account Name</th>
+                <th scope="col">Account Number</th>
+                <th scope="col">Account Balance</th>
+                <th scope="col">Account Currency</th>
+                <th scope="col">Account Status</th>
+                <th scope="col">Country</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="account in accounts" :key="account.id">
+                <td>{{ account.name }}</td>
+                <td>{{ account.account_number }}</td>
+                <td>{{ account.balance }}</td>
+                <td>{{ account.currency }}</td>
+                <td>
+                  <span
+                    v-if="account.status == 'Active'"
+                    class="badge badge-success"
+                    >{{ account.status }}</span
+                  >
+                  <span v-else class="badge badge-danger">{{
+                    account.status
+                  }}</span>
+                </td>
+                <td>{{ account.country }}</td>
+                <td>
+                  <div class="btn-group" role="group">
+                    <button
+                      type="button"
+                      class="btn btn-info btn-sm"
+                      v-b-modal.edit-account-modal
+                      @click="editAccount(account)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-sm"
+                      @click="deleteAccount(account)"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <footer class="text-center">
+            Copyright &copy; All Rights Reserved.
+          </footer>
         </div>
       </div>
+      <b-modal
+        ref="addAccountModal"
+        id="account-modal"
+        title="Create a new account"
+        hide-backdrop
+        hide-footer
+      >
+        <b-form @submit="onSubmit" class="w-100">
+          <b-form-group
+            id="form-name-group"
+            label="Account Name:"
+            label-for="form-name-input"
+          >
+            <b-form-input
+              id="form-name-input"
+              type="text"
+              v-model="createAccountForm.name"
+              placeholder="Account Name"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-form-group
+            id="form-currency-group"
+            label="Currency:"
+            label-for="form-currency-input"
+          >
+            <b-form-input
+              id="form-currency-input"
+              type="text"
+              v-model="createAccountForm.currency"
+              placeholder="$ or €"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-form-group
+            id="form-country-group"
+            label="Country:"
+            label-for="form-country-input"
+          >
+            <b-form-input
+              id="form-country-input"
+              type="text"
+              v-model="createAccountForm.country"
+              placeholder="Country"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-button type="submit" variant="outline-info">Submit</b-button>
+        </b-form>
+      </b-modal>
+      <!-- End of Modal for Create Account-->
+      <!-- Start of Modal for Edit Account-->
+      <b-modal
+        ref="editAccountModal"
+        id="edit-account-modal"
+        title="Edit the account"
+        hide-backdrop
+        hide-footer
+      >
+        <b-form @submit="onSubmitUpdate" class="w-100">
+          <b-form-group
+            id="form-edit-name-group"
+            label="Account Name:"
+            label-for="form-edit-name-input"
+          >
+            <b-form-input
+              id="form-edit-name-input"
+              type="text"
+              v-model="editAccountForm.name"
+              placeholder="Account Name"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-button type="submit" variant="outline-info">Update</b-button>
+        </b-form>
+      </b-modal>
+      <!-- End of Modal for Edit Account-->
     </div>
   </div>
 </template>
 
-<style>
-.homepage {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-image: url("/public/bank-bg.jpg");
-  background-size: cover;
-  background-position: center;
-  color: #fff;
-  overflow: hidden;
-}
+<script>
+import axios from "axios";
+export default {
+  name: "UserPage",
+  data() {
+    return {
+      accounts: [],
+      env_var_file_name: process.env.VUE_APP_ENV_VAR_FILE_NAME,
+      environment: process.env.NODE_ENV,
+      createAccountForm: {
+        name: "",
+        currency: "",
+        country: "",
+      },
+      editAccountForm: {
+        id: "",
+        name: "",
+      },
+      showMessage: false,
+      message: "",
+    };
+  },
+  methods: {
+    /***************************************************
+     * RESTful requests
+     ***************************************************/
 
-.title {
-  font-size: 4rem;
-  text-align: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  font-weight: 600;
-  animation: titleAnimation 3s ease-in-out 1.5s forwards;
-  transform: translateY(-100%);
-  margin-bottom: 2rem;
-}
+    //GET function
+    RESTgetAccounts() {
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
+      axios
+        .get(path)
+        .then((response) => {
+          this.accounts = response.data.accounts;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
 
-.catch-phrase {
-  font-size: 1.5rem;
-  text-align: center;
-  font-weight: 400;
-  animation: catchPhraseAnimation 3s ease-in-out 1.5s forwards;
-  opacity: 0;
-  margin-top: 0.5rem;
-}
+    // POST function
+    RESTcreateAccount(payload) {
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
+      axios
+        .post(path, payload)
+        .then((response) => {
+          this.RESTgetAccounts();
+          // For message alert
+          this.message = "Account Created succesfully!";
+          // To actually show the message
+          this.showMessage = true;
+          // To hide the message after 3 seconds
+          setTimeout(() => {
+            this.showMessage = false;
+          }, 3000);
+        })
+        .catch((error) => {
+          console.error(error);
+          this.RESTgetAccounts();
+        });
+    },
 
-@keyframes titleAnimation {
-  0% {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
+    // Update function
+    RESTupdateAccount(payload, accountId) {
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/${accountId}`;
+      axios
+        .put(path, payload)
+        .then((response) => {
+          this.RESTgetAccounts();
+          // For message alert
+          this.message = "Account Updated succesfully!";
+          // To actually show the message
+          this.showMessage = true;
+          // To hide the message after 3 seconds
+          setTimeout(() => {
+            this.showMessage = false;
+          }, 3000);
+        })
+        .catch((error) => {
+          console.error(error);
+          this.RESTgetAccounts();
+        });
+    },
 
-@keyframes catchPhraseAnimation {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
+    // Delete account
+    RESTdeleteAccount(accountId) {
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/${accountId}`;
+      axios
+        .delete(path)
+        .then((response) => {
+          this.RESTgetAccounts();
+          // For message alert
+          this.message = "Account Deleted succesfully!";
+          // To actually show the message
+          this.showMessage = true;
+          // To hide the message after 3 seconds
+          setTimeout(() => {
+            this.showMessage = false;
+          }, 3000);
+        })
+        .catch((error) => {
+          console.error(error);
+          this.RESTgetAccounts();
+        });
+    },
 
-.button-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  margin-top: 0.5rem;
-}
+    /***************************************************
+     * FORM MANAGEMENT
+     * *************************************************/
 
-.btn {
-  display: block;
-  margin: 0.5rem 0;
-}
+    // Initialize forms empty
+    initForm() {
+      this.createAccountForm.name = "";
+      this.createAccountForm.currency = "";
+      (this.createAccountForm.country = ""), (this.editAccountForm.id = "");
+      this.editAccountForm.name = "";
+    },
 
-.login-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-</style>
+    // Handle submit event for create account
+    onSubmit(e) {
+      e.preventDefault(); //prevent default form submit form the browser
+      this.$refs.addAccountModal.hide(); //hide the modal when submitted
+      const payload = {
+        name: this.createAccountForm.name,
+        currency: this.createAccountForm.currency,
+        country: this.createAccountForm.country,
+      };
+      this.RESTcreateAccount(payload);
+      this.initForm();
+    },
+
+    // Handle submit event for edit account
+    onSubmitUpdate(e) {
+      e.preventDefault(); //prevent default form submit form the browser
+      this.$refs.editAccountModal.hide(); //hide the modal when submitted
+      const payload = {
+        name: this.editAccountForm.name,
+      };
+      this.RESTupdateAccount(payload, this.editAccountForm.id);
+      this.initForm();
+    },
+
+    // Handle edit button
+    editAccount(account) {
+      this.editAccountForm = account;
+    },
+
+    // Handle Delete button
+    deleteAccount(account) {
+      this.RESTdeleteAccount(account.id);
+    },
+  },
+
+  /***************************************************
+   * LIFECYClE HOOKS
+   ***************************************************/
+  created() {
+    this.RESTgetAccounts();
+  },
+};
+</script>
