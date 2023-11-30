@@ -113,16 +113,16 @@ export default {
     login() {
       // Replace the following if-else conditions with your own logic.
       if (this.username === "cris" && this.password === "test") {
-        this.loggedIn = true;
-        this.error = false;
-
-        // Redirect to the dashboard component after successful login
-        this.$router.push("/user");
-      } else {
+      this.loggedIn = true;
+      this.error = false;
+      this.$store.dispatch('updateUsername', this.username); // Dispatch action to update username in store
+      this.$router.push("/user");
+    } else {
         this.loggedIn = false;
         this.error = true;
       }
     },
   },
 };
+
 </script>

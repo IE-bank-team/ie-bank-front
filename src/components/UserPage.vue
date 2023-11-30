@@ -328,7 +328,16 @@ export default {
    ***************************************************/
   created() {
     this.RESTgetAccounts();
+    
+    console.log('Username from Vuex store:', this.username);
+
   },
+  computed: {
+  username() {
+    console.log(this.$store.state.username);
+    return this.$store.state.username;
+  },
+},
 };
 
 
