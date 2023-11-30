@@ -3,8 +3,23 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-12">
-          <h1 class="title">Admin Portal</h1>
-          <p class="catch-phrase">Manage Users</p>
+          <h1 class="title">Welcome to IE Bank</h1>
+          <p class="catch-phrase">Admin Login</p>
+          <div class="login-container">
+            <form @submit.prevent="login">
+              <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" v-model="username" />
+              </div>
+              <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" v-model="password" />
+              </div>
+              <button type="submit">Login</button>
+            </form>
+            <p v-if="loggedIn">Logged in successfully!</p>
+            <p v-if="error">Invalid username or password.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -84,3 +99,30 @@
   align-items: center;
 }
 </style>
+<script>
+export default {
+  data() {
+    return {
+      username: "",
+      password: "",
+      loggedIn: false,
+      error: false,
+    };
+  },
+  methods: {
+    login() {
+      // Replace the following if-else conditions with your own logic.
+      if (this.username === "adnan" && this.password === "test") {
+        this.loggedIn = true;
+        this.error = false;
+
+        // Redirect to the dashboard component after successful login
+        this.$router.push("/admin");
+      } else {
+        this.loggedIn = false;
+        this.error = true;
+      }
+    },
+  },
+};
+</script>
