@@ -101,6 +101,20 @@
             </b-form-input>
           </b-form-group>
           <b-form-group
+            id="form-password-group"
+            label="Generate Password:"
+            label-for="form-password-input"
+          >
+            <b-form-input
+              id="form-password-input"
+              type="text"
+              v-model="createAccountForm.password"
+              placeholder="Account password"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-form-group
             id="form-currency-group"
             label="Currency:"
             label-for="form-currency-input"
@@ -174,6 +188,7 @@ export default {
       environment: process.env.NODE_ENV,
       createAccountForm: {
         name: "",
+        password: "",
         currency: "",
         country: "",
       },
@@ -197,6 +212,7 @@ export default {
         .get(path)
         .then((response) => {
           this.accounts = response.data.accounts;
+          console.log(this.accounts);
         })
         .catch((error) => {
           console.error(error);
@@ -210,6 +226,7 @@ export default {
         .post(path, payload)
         .then((response) => {
           this.RESTgetAccounts();
+          console.log(this.accounts);
           // For message alert
           this.message = "Account Created succesfully!";
           // To actually show the message
@@ -276,6 +293,7 @@ export default {
     // Initialize forms empty
     initForm() {
       this.createAccountForm.name = "";
+      this.createAccountForm.password = "";
       this.createAccountForm.currency = "";
       (this.createAccountForm.country = ""), (this.editAccountForm.id = "");
       this.editAccountForm.name = "";
@@ -287,6 +305,7 @@ export default {
       this.$refs.addAccountModal.hide(); //hide the modal when submitted
       const payload = {
         name: this.createAccountForm.name,
+        password: this.createAccountForm.password,
         currency: this.createAccountForm.currency,
         country: this.createAccountForm.country,
       };
