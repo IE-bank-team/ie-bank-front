@@ -181,6 +181,7 @@ export default {
       environment: process.env.NODE_ENV,
       createAccountForm: {
         name: "",
+        password: "",
         currency: "",
         country: "",
       },
@@ -301,6 +302,7 @@ export default {
     // Initialize forms empty
     initForm() {
       this.createAccountForm.name = "";
+      // this.createAccountForm.password = "";
       this.createAccountForm.currency = "";
       (this.createAccountForm.country = ""), (this.editAccountForm.id = "");
       this.editAccountForm.name = "";
@@ -312,6 +314,7 @@ export default {
       this.$refs.addAccountModal.hide(); //hide the modal when submitted
       const payload = {
         name: this.username,
+        password: "",
         currency: this.createAccountForm.currency,
         country: this.createAccountForm.country,
       };
