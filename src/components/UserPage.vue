@@ -345,19 +345,9 @@ export default {
    * LIFECYClE HOOKS
    ***************************************************/
   async created() {
-    // this.RESTgetAccounts();
-    // console.log("all users", this.RESTgetAccounts());
     console.log("Username from Vuex store:", this.username);
 
-    // await this.RESTgetAccounts();
-    // console.log("all users", this.accounts);
-
     await this.RESTgetAccounts();
-    // Filter accounts based on the username
-    // this.accounts = this.accounts.filter(
-    //   (account) => account.name === this.username
-    // );
-    // console.log("Filtered users", this.accounts);
   },
   computed: {
     username() {

@@ -100,9 +100,14 @@
 }
 </style>
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
+      accounts: [],
+      env_var_file_name: process.env.VUE_APP_ENV_VAR_FILE_NAME,
+      environment: process.env.NODE_ENV,
       username: "",
       password: "",
       loggedIn: false,
@@ -110,19 +115,51 @@ export default {
     };
   },
   methods: {
-    login() {
-      // Replace the following if-else conditions with your own logic.
-      if (this.username === "cris" && this.password === "test") {
-      this.loggedIn = true;
-      this.error = false;
-      this.$store.dispatch('updateUsername', this.username); // Dispatch action to update username in store
-      this.$router.push("/user");
-    } else {
+    RESTgetAccounts() {
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
+
+      // Return the axios promise directly
+      return axios
+        .get(path)
+        .then((response) => {
+          this.accounts = response.data.accounts;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    async login() {
+      if (
+        this.accounts.some(
+          (account) =>
+            account.name === this.username && account.password === this.password
+        )
+      ) {
+        this.loggedIn = true;
+        this.error = false;
+        this.$store.dispatch("updateUsername", this.username); // Dispatch action to update username in store
+        this.$router.push("/user");
+      } else {
         this.loggedIn = false;
         this.error = true;
       }
     },
   },
-};
 
+  async created() {
+    // this.RESTgetAccounts();
+    // console.log("all users", this.RESTgetAccounts());
+    // console.log("Username from Vuex store:", this.username);
+
+    // await this.RESTgetAccounts();
+    // console.log("all users", this.accounts);
+
+    await this.RESTgetAccounts();
+    // this.accounts = this.accounts.filter(
+    //   (account) => account.name === this.username
+    // );
+    console.log("Filtered users", this.accounts);
+  },
+};
 </script>
