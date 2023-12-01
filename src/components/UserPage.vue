@@ -101,7 +101,8 @@
               id="form-name-input"
               type="text"
               v-model="createAccountForm.name"
-              placeholder="Account Name"
+              :placeholder="`${username}`"
+              disabled
               required
             >
             </b-form-input>
@@ -197,12 +198,30 @@ export default {
      ***************************************************/
 
     //GET function
+    // RESTgetAccounts() {
+    //   const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
+    //   axios
+    //     .get(path)
+    //     .then((response) => {
+    //       this.accounts = response.data.accounts;
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //     });
+    // },
+
     RESTgetAccounts() {
       const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
-      axios
+
+      // Return the axios promise directly
+      return axios
         .get(path)
         .then((response) => {
           this.accounts = response.data.accounts;
+          this.accounts = this.accounts.filter(
+            (account) => account.name === this.username
+          );
+          console.log(this.accounts);
         })
         .catch((error) => {
           console.error(error);
@@ -283,8 +302,7 @@ export default {
     initForm() {
       this.createAccountForm.name = "";
       this.createAccountForm.currency = "";
-      this.createAccountForm.country = "",
-      this.editAccountForm.id = "";
+      (this.createAccountForm.country = ""), (this.editAccountForm.id = "");
       this.editAccountForm.name = "";
     },
 
@@ -293,7 +311,7 @@ export default {
       e.preventDefault(); //prevent default form submit form the browser
       this.$refs.addAccountModal.hide(); //hide the modal when submitted
       const payload = {
-        name: this.createAccountForm.name,
+        name: this.username,
         currency: this.createAccountForm.currency,
         country: this.createAccountForm.country,
       };
@@ -326,20 +344,26 @@ export default {
   /***************************************************
    * LIFECYClE HOOKS
    ***************************************************/
-  created() {
-    this.RESTgetAccounts();
-    
-    console.log('Username from Vuex store:', this.username);
+  async created() {
+    // this.RESTgetAccounts();
+    // console.log("all users", this.RESTgetAccounts());
+    console.log("Username from Vuex store:", this.username);
 
+    // await this.RESTgetAccounts();
+    // console.log("all users", this.accounts);
+
+    await this.RESTgetAccounts();
+    // Filter accounts based on the username
+    // this.accounts = this.accounts.filter(
+    //   (account) => account.name === this.username
+    // );
+    // console.log("Filtered users", this.accounts);
   },
   computed: {
-  username() {
-    console.log(this.$store.state.username);
-    return this.$store.state.username;
+    username() {
+      console.log(this.$store.state.username);
+      return this.$store.state.username;
+    },
   },
-},
 };
-
-
-
 </script>
