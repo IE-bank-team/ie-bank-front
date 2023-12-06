@@ -102,7 +102,7 @@
           </b-form-group>
           <b-form-group
             id="form-password-group"
-            label="Generate Password:"
+            label="Create Password:"
             label-for="form-password-input"
           >
             <b-form-input
@@ -178,6 +178,7 @@
 </template>
 
 <script>
+import CryptoJS from "crypto-js";
 import axios from "axios";
 export default {
   name: "UserPage",
@@ -303,12 +304,21 @@ export default {
     onSubmit(e) {
       e.preventDefault(); //prevent default form submit form the browser
       this.$refs.addAccountModal.hide(); //hide the modal when submitted
+
+      // Encrypt the password
+      const encryptedPassword = CryptoJS.AES.encrypt(
+        this.createAccountForm.password,
+        "secret-key"
+      ).toString();
+
       const payload = {
         name: this.createAccountForm.name,
-        password: this.createAccountForm.password,
+        password: encryptedPassword,
         currency: this.createAccountForm.currency,
         country: this.createAccountForm.country,
         balance: 0,
+        transactions: "",
+        main_account: true,
       };
       this.RESTcreateAccount(payload);
       this.initForm();
