@@ -23,7 +23,7 @@
           <button
             type="button"
             class="btn btn-secondary btn-sm"
-            v-b-modal.account-modal
+            v-b-modal.transfer-modal
           >
             Transfer money between accounts
           </button>
@@ -138,6 +138,60 @@
           <b-button type="submit" variant="outline-info">Submit</b-button>
         </b-form>
       </b-modal>
+
+      <b-modal
+        ref="transferBalanceModal"
+        id="transfer-modal"
+        title="Transfer money between accounts"
+        hide-backdrop
+        hide-footer
+      >
+        <b-form @submit="onSubmitTransferBalance" class="w-100">
+          <b-form-group
+            id="form-from-group"
+            label="Transfer from: (Enter account number)"
+            label-for="form-from-input"
+          >
+            <b-form-input
+              id="form-from-input"
+              type="text"
+              v-model="transferBalanceForm.from"
+              placeholder="Account Number"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-form-group
+            id="form-to-group"
+            label="Transfer to: (Enter account number)"
+            label-for="form-to-input"
+          >
+            <b-form-input
+              id="form-to-input"
+              type="text"
+              v-model="transferBalanceForm.to"
+              placeholder="Account Number"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-form-group
+            id="form-amount-group"
+            label="Amount:"
+            label-for="form-amount-input"
+          >
+            <b-form-input
+              id="form-amount-input"
+              type="text"
+              v-model="transferBalanceForm.balance"
+              placeholder="amount"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-button type="submit" variant="outline-info">Submit</b-button>
+        </b-form>
+      </b-modal>
       <!-- End of Modal for Create Account-->
       <!-- Start of Modal for Edit Account-->
       <b-modal
@@ -184,6 +238,12 @@ export default {
         password: "",
         currency: "",
         country: "",
+      },
+      transferBalanceForm: {
+        id: "",
+        from: "",
+        to: "",
+        balance: "",
       },
       editAccountForm: {
         id: "",
@@ -273,6 +333,28 @@ export default {
         });
     },
 
+    // Update function
+    RESTtransferBalance(payload, accountId) {
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/${accountId}`;
+      axios
+        .put(path, payload.balance)
+        .then((response) => {
+          this.RESTgetAccounts();
+          // For message alert
+          this.message = "Account Updated succesfully!";
+          // To actually show the message
+          this.showMessage = true;
+          // To hide the message after 3 seconds
+          setTimeout(() => {
+            this.showMessage = false;
+          }, 3000);
+        })
+        .catch((error) => {
+          console.error(error);
+          this.RESTgetAccounts();
+        });
+    },
+
     // Delete account
     RESTdeleteAccount(accountId) {
       const path = `${process.env.VUE_APP_ROOT_URL}/accounts/${accountId}`;
@@ -306,6 +388,10 @@ export default {
       this.createAccountForm.currency = "";
       (this.createAccountForm.country = ""), (this.editAccountForm.id = "");
       this.editAccountForm.name = "";
+      this.transferBalanceForm.id = "";
+      this.transferBalanceForm.from = "";
+      this.transferBalanceForm.to = "";
+      this.transferBalanceForm.balance = "";
     },
 
     // Handle submit event for create account
@@ -320,6 +406,36 @@ export default {
       };
       this.RESTcreateAccount(payload);
       this.initForm();
+    },
+
+    // Handle submit event for transfer balance
+    onSubmitTransferBalance(e) {
+      console.log("Transfer balance");
+      e.preventDefault(); //prevent default form submit form the browser
+      this.$refs.addAccountModal.hide(); //hide the modal when submitted
+      const payload = {
+        from: this.transferBalanceForm.from,
+        to: this.transferBalanceForm.to,
+        balance: this.transferBalanceForm.balance,
+      };
+
+      if (this.isValid(payload)) {
+        this.RESTtransferBalance(payload, this.transferBalanceForm.id);
+        this.initForm();
+      } else {
+        alert("Invalid input");
+      }
+    },
+
+    isValid(payload) {
+      if (
+        payload.from === payload.to ||
+        payload.balance <= 0 ||
+        payload.balance === ""
+      ) {
+        return false;
+      }
+      return true;
     },
 
     // Handle submit event for edit account
