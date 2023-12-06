@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-12">
-          <h1>Accounts</h1>
+          <h1>Account Management Portal</h1>
           <hr />
           <br />
           <!-- Allert Message -->
@@ -19,7 +19,7 @@
           >
             Create Account
           </button>
-          <br />
+          <!-- <br /> -->
           <button
             type="button"
             class="btn btn-secondary btn-sm"
@@ -27,7 +27,15 @@
           >
             Transfer money between accounts
           </button>
-          <br /><br />
+          <br />
+          <br />
+          <br />
+
+          <h2>Accounts</h2>
+          <p>
+            You cannot delete your main account. Please contact admin for more
+            information or to delete your account.
+          </p>
           <table class="table table-hover">
             <thead>
               <tr>
@@ -41,7 +49,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="account in accounts" :key="account.id">
+              <tr v-for="(account, index) in accounts" :key="account.id">
                 <td>{{ account.name }}</td>
                 <td>{{ account.account_number }}</td>
                 <td>{{ account.balance }}</td>
@@ -50,8 +58,9 @@
                   <span
                     v-if="account.status == 'Active'"
                     class="badge badge-success"
-                    >{{ account.status }}</span
                   >
+                    {{ account.status }}
+                  </span>
                   <span v-else class="badge badge-danger">{{
                     account.status
                   }}</span>
@@ -59,29 +68,71 @@
                 <td>{{ account.country }}</td>
                 <td>
                   <div class="btn-group" role="group">
-                    <!-- <button
-                      type="button"
-                      class="btn btn-info btn-sm"
-                      v-b-modal.edit-account-modal
-                      @click="editAccount(account)"
-                    >
-                      Edit
-                    </button> -->
                     <button
+                      v-if="index !== 0"
                       type="button"
                       class="btn btn-danger btn-sm"
                       @click="deleteAccount(account)"
                     >
                       Delete
                     </button>
+                    <span v-else> Undeletable </span>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
-          <footer class="text-center">
-            Copyright &copy; All Rights Reserved.
-          </footer>
+
+          <br />
+          <br />
+
+          <h2>Transactions</h2>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">From</th>
+                <th scope="col">To</th>
+                <th scope="col">Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="account in mainAccount" :key="account.id">
+                <td>
+                  <div
+                    v-for="(transaction, index) in getTransactions(
+                      account.transactions
+                    )"
+                    :key="index"
+                  >
+                    {{ transaction.from }}
+                  </div>
+                </td>
+                <td>
+                  <div
+                    v-for="(transaction, index) in getTransactions(
+                      account.transactions
+                    )"
+                    :key="index"
+                  >
+                    {{ transaction.to }}
+                  </div>
+                </td>
+                <td>
+                  <div
+                    v-for="(transaction, index) in getTransactions(
+                      account.transactions
+                    )"
+                    :key="index"
+                  >
+                    {{ transaction.balance }}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <br /><br /><br /><br /><br />
+          <footer class="">Copyright &copy; All Rights Reserved.</footer>
         </div>
       </div>
       <b-modal
@@ -231,6 +282,7 @@ export default {
   data() {
     return {
       accounts: [],
+      mainAccount: [],
       env_var_file_name: process.env.VUE_APP_ENV_VAR_FILE_NAME,
       environment: process.env.NODE_ENV,
       createAccountForm: {
@@ -270,6 +322,18 @@ export default {
     //     });
     // },
 
+    getTransactions(transactionString) {
+      const transactions = [];
+      const transactionSections = transactionString.split(",").filter(Boolean);
+
+      for (const section of transactionSections) {
+        const [from, to, balance] = section.split(" ").map(Number);
+        transactions.push({ from, to, balance });
+      }
+
+      return transactions;
+    },
+
     RESTgetAccounts() {
       const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
 
@@ -282,6 +346,25 @@ export default {
             (account) => account.name === this.username
           );
           console.log(this.accounts);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    RESTgetMainAccount() {
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
+
+      // Return the axios promise directly
+      return axios
+        .get(path)
+        .then((response) => {
+          this.mainAccount = response.data.accounts;
+          this.mainAccount = this.mainAccount.filter(
+            (account) =>
+              account.name === this.username && account.main_account === true
+          );
+          console.log(this.mainAccount);
         })
         .catch((error) => {
           console.error(error);
@@ -313,6 +396,7 @@ export default {
         .post(path, payload)
         .then((response) => {
           this.RESTgetAccounts();
+          this.RESTgetMainAccount();
           // For message alert
           this.message = "Account Created succesfully!";
           // To actually show the message
@@ -325,6 +409,7 @@ export default {
         .catch((error) => {
           console.error(error);
           this.RESTgetAccounts();
+          this.RESTgetMainAccount();
         });
     },
 
@@ -335,6 +420,7 @@ export default {
         .put(path, payload)
         .then((response) => {
           this.RESTgetAccounts();
+          this.RESTgetMainAccount();
           // For message alert
           this.message = "Account Updated succesfully!";
           // To actually show the message
@@ -347,53 +433,90 @@ export default {
         .catch((error) => {
           console.error(error);
           this.RESTgetAccounts();
+          this.RESTgetMainAccount();
         });
     },
 
     // Update function
-    RESTtransferBalance(bal, fromAccount, toAccount) {
+    RESTtransferBalance(payload, fromAccount, toAccount, mainAccount) {
       const pathFrom = `${process.env.VUE_APP_ROOT_URL}/accounts/${fromAccount.id}`;
       const pathTo = `${process.env.VUE_APP_ROOT_URL}/accounts/${toAccount.id}`;
+      const pathMain = `${process.env.VUE_APP_ROOT_URL}/accounts/${mainAccount.id}`;
 
-      let newFromBalance = fromAccount.balance - bal;
+      let newFromBalance = fromAccount.balance - payload.balance;
       if (newFromBalance < 0) {
         alert("Insufficient funds");
         return;
       }
-      let newToBalance = toAccount.balance + bal;
+      let newToBalance = toAccount.balance + payload.balance;
 
       console.log("new from balance", newFromBalance);
       console.log("new to balance", newToBalance);
 
       const payloadFrom = {
         balance: newFromBalance,
+        transactions: "",
       };
 
       const payloadTo = {
         balance: newToBalance,
+        transactions: "",
       };
+
+      let mainTransactions = "";
+      mainTransactions += `${mainAccount.transactions}${payload.from} ${payload.to} ${payload.balance} ,`;
+
+      const payloadMain = {
+        balance: mainAccount.balance,
+        transactions: mainTransactions,
+      };
+
+      if (mainAccount.id === fromAccount.id) {
+        payloadMain.balance = newFromBalance;
+      } else if (mainAccount.id === toAccount.id) {
+        payloadMain.balance = newToBalance;
+      } else {
+        payloadMain.balance = mainAccount.balance;
+      }
 
       axios
         .put(pathTo, payloadTo)
-        .then((response) => {
+        .then((responseTo) => {
+          // First PUT request successful
           axios
             .put(pathFrom, payloadFrom)
-            .then((response) => {
-              this.RESTgetAccounts();
-              this.message = "Balance transferred successfully!";
-              this.showMessage = true;
-              setTimeout(() => {
-                this.showMessage = false;
-              }, 3000);
+            .then((responseFrom) => {
+              // Second PUT request successful
+              axios
+                .put(pathMain, payloadMain) // Add your main path and payload here
+                .then((responseMain) => {
+                  // Third PUT request successful
+                  this.RESTgetAccounts();
+                  this.RESTgetMainAccount();
+                  this.message = "Balance transferred successfully!";
+                  this.showMessage = true;
+                  setTimeout(() => {
+                    this.showMessage = false;
+                  }, 3000);
+                })
+                .catch((errorMain) => {
+                  console.error(errorMain);
+                  this.RESTgetAccounts();
+                  this.RESTgetMainAccount();
+                });
             })
-            .catch((error) => {
-              console.error(error);
+            .catch((errorFrom) => {
+              // Second PUT request failed
+              console.error(errorFrom);
               this.RESTgetAccounts();
+              this.RESTgetMainAccount();
             });
         })
-        .catch((error) => {
-          console.error(error);
+        .catch((errorTo) => {
+          // First PUT request failed
+          console.error(errorTo);
           this.RESTgetAccounts();
+          this.RESTgetMainAccount();
         });
     },
 
@@ -404,6 +527,7 @@ export default {
         .delete(path)
         .then((response) => {
           this.RESTgetAccounts();
+          this.RESTgetMainAccount();
           // For message alert
           this.message = "Account Deleted succesfully!";
           // To actually show the message
@@ -416,6 +540,7 @@ export default {
         .catch((error) => {
           console.error(error);
           this.RESTgetAccounts();
+          this.RESTgetMainAccount();
         });
     },
 
@@ -443,8 +568,10 @@ export default {
         name: this.username,
         password: "",
         currency: this.createAccountForm.currency,
-        balance: 5000,
+        balance: 0,
         country: this.createAccountForm.country,
+        transactions: "",
+        main_account: false,
       };
       this.RESTcreateAccount(payload);
       this.initForm();
@@ -478,11 +605,19 @@ export default {
         }
       });
 
+      let mainAccount = null;
+      this.accounts.forEach((obj) => {
+        if (obj.main_account === true) {
+          mainAccount = obj;
+        }
+      });
+
       console.log("from account", fromAccount);
       console.log("to account", toAccount);
+      console.log("main account", mainAccount);
 
       if (this.isValid(payload)) {
-        this.RESTtransferBalance(payload.balance, fromAccount, toAccount);
+        this.RESTtransferBalance(payload, fromAccount, toAccount, mainAccount);
         this.initForm();
       } else {
         alert("Invalid input");
@@ -529,6 +664,7 @@ export default {
     console.log("Username from Vuex store:", this.username);
 
     await this.RESTgetAccounts();
+    await this.RESTgetMainAccount();
   },
   computed: {
     username() {
