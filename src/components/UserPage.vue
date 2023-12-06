@@ -59,14 +59,14 @@
                 <td>{{ account.country }}</td>
                 <td>
                   <div class="btn-group" role="group">
-                    <button
+                    <!-- <button
                       type="button"
                       class="btn btn-info btn-sm"
                       v-b-modal.edit-account-modal
                       @click="editAccount(account)"
                     >
                       Edit
-                    </button>
+                    </button> -->
                     <button
                       type="button"
                       class="btn btn-danger btn-sm"
