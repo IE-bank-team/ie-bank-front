@@ -308,6 +308,7 @@ export default {
         password: this.createAccountForm.password,
         currency: this.createAccountForm.currency,
         country: this.createAccountForm.country,
+        balance: 0,
       };
       this.RESTcreateAccount(payload);
       this.initForm();
