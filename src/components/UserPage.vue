@@ -240,7 +240,6 @@ export default {
         country: "",
       },
       transferBalanceForm: {
-        id: "",
         from: "",
         to: "",
         balance: "",
@@ -283,6 +282,24 @@ export default {
             (account) => account.name === this.username
           );
           console.log(this.accounts);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    RESTgetFromToAccounts() {
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
+
+      // Return the axios promise directly
+      return axios
+        .get(path)
+        .then((response) => {
+          this.accounts = response.data.accounts;
+          this.accounts = this.accounts.filter(
+            (account) => account.name === this.username
+          );
+          console.log(`from to accounts: ${this.accounts}`);
         })
         .catch((error) => {
           console.error(error);
@@ -334,20 +351,45 @@ export default {
     },
 
     // Update function
-    RESTtransferBalance(payload, accountId) {
-      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/${accountId}`;
+    RESTtransferBalance(bal, fromAccount, toAccount) {
+      const pathFrom = `${process.env.VUE_APP_ROOT_URL}/accounts/${fromAccount.id}`;
+      const pathTo = `${process.env.VUE_APP_ROOT_URL}/accounts/${toAccount.id}`;
+
+      let newFromBalance = fromAccount.balance - bal;
+      if (newFromBalance < 0) {
+        alert("Insufficient funds");
+        return;
+      }
+      let newToBalance = toAccount.balance + bal;
+
+      console.log("new from balance", newFromBalance);
+      console.log("new to balance", newToBalance);
+
+      const payloadFrom = {
+        balance: newFromBalance,
+      };
+
+      const payloadTo = {
+        balance: newToBalance,
+      };
+
       axios
-        .put(path, payload.balance)
+        .put(pathTo, payloadTo)
         .then((response) => {
-          this.RESTgetAccounts();
-          // For message alert
-          this.message = "Account Updated succesfully!";
-          // To actually show the message
-          this.showMessage = true;
-          // To hide the message after 3 seconds
-          setTimeout(() => {
-            this.showMessage = false;
-          }, 3000);
+          axios
+            .put(pathFrom, payloadFrom)
+            .then((response) => {
+              this.RESTgetAccounts();
+              this.message = "Balance transferred successfully!";
+              this.showMessage = true;
+              setTimeout(() => {
+                this.showMessage = false;
+              }, 3000);
+            })
+            .catch((error) => {
+              console.error(error);
+              this.RESTgetAccounts();
+            });
         })
         .catch((error) => {
           console.error(error);
@@ -388,7 +430,6 @@ export default {
       this.createAccountForm.currency = "";
       (this.createAccountForm.country = ""), (this.editAccountForm.id = "");
       this.editAccountForm.name = "";
-      this.transferBalanceForm.id = "";
       this.transferBalanceForm.from = "";
       this.transferBalanceForm.to = "";
       this.transferBalanceForm.balance = "";
@@ -402,6 +443,7 @@ export default {
         name: this.username,
         password: "",
         currency: this.createAccountForm.currency,
+        balance: 5000,
         country: this.createAccountForm.country,
       };
       this.RESTcreateAccount(payload);
@@ -409,18 +451,38 @@ export default {
     },
 
     // Handle submit event for transfer balance
-    onSubmitTransferBalance(e) {
+    async onSubmitTransferBalance(e) {
       console.log("Transfer balance");
       e.preventDefault(); //prevent default form submit form the browser
       this.$refs.addAccountModal.hide(); //hide the modal when submitted
       const payload = {
         from: this.transferBalanceForm.from,
         to: this.transferBalanceForm.to,
-        balance: this.transferBalanceForm.balance,
+        balance: parseInt(this.transferBalanceForm.balance, 10),
       };
 
+      await this.RESTgetFromToAccounts();
+      console.log("from - to", this.accounts);
+
+      let fromAccount = null;
+      this.accounts.forEach((obj) => {
+        if (obj.account_number === payload.from) {
+          fromAccount = obj;
+        }
+      });
+
+      let toAccount = null;
+      this.accounts.forEach((obj) => {
+        if (obj.account_number === payload.to) {
+          toAccount = obj;
+        }
+      });
+
+      console.log("from account", fromAccount);
+      console.log("to account", toAccount);
+
       if (this.isValid(payload)) {
-        this.RESTtransferBalance(payload, this.transferBalanceForm.id);
+        this.RESTtransferBalance(payload.balance, fromAccount, toAccount);
         this.initForm();
       } else {
         alert("Invalid input");
