@@ -156,20 +156,44 @@
       >
         <b-form @submit="onSubmitUpdate" class="w-100">
           <b-form-group
-            id="form-edit-name-group"
-            label="Account Name:"
-            label-for="form-edit-name-input"
+            id="form-edit-currency-group"
+            label="Account currency:"
+            label-for="form-edit-currency-input"
           >
             <b-form-input
-              id="form-edit-name-input"
+              id="form-edit-currency-input"
               type="text"
-              v-model="editAccountForm.name"
-              placeholder="Account Name"
+              v-model="editAccountForm.currency"
+              placeholder="Account currency"
               required
             >
             </b-form-input>
           </b-form-group>
-          <b-button type="submit" variant="outline-info">Update</b-button>
+          <b-button type="submit" variant="outline-info"
+            >Update Currency</b-button
+          >
+        </b-form>
+
+        <br />
+
+        <b-form @submit="onSubmitUpdateCountry" class="w-100">
+          <b-form-group
+            id="form-edit-country-group"
+            label="Account country:"
+            label-for="form-edit-country-input"
+          >
+            <b-form-input
+              id="form-edit-country-input"
+              type="text"
+              v-model="editAccountForm.country"
+              placeholder="Account country"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-button type="submit" variant="outline-info"
+            >Update Country</b-button
+          >
         </b-form>
       </b-modal>
       <!-- End of Modal for Edit Account-->
@@ -196,6 +220,8 @@ export default {
       editAccountForm: {
         id: "",
         name: "",
+        currency: "",
+        country: "",
       },
       showMessage: false,
       message: "",
@@ -245,7 +271,29 @@ export default {
 
     // Update function
     RESTupdateAccount(payload, accountId) {
-      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/${accountId}`;
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/${accountId}/currency`;
+      axios
+        .put(path, payload)
+        .then((response) => {
+          this.RESTgetAccounts();
+          // For message alert
+          this.message = "Account Updated succesfully!";
+          // To actually show the message
+          this.showMessage = true;
+          // To hide the message after 3 seconds
+          setTimeout(() => {
+            this.showMessage = false;
+          }, 3000);
+        })
+        .catch((error) => {
+          console.error(error);
+          this.RESTgetAccounts();
+        });
+    },
+
+    // Update function
+    RESTupdateAccountCountry(payload, accountId) {
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/${accountId}/country`;
       axios
         .put(path, payload)
         .then((response) => {
@@ -298,6 +346,8 @@ export default {
       this.createAccountForm.currency = "";
       (this.createAccountForm.country = ""), (this.editAccountForm.id = "");
       this.editAccountForm.name = "";
+      this.editAccountForm.currency = "";
+      this.editAccountForm.country = "";
     },
 
     // Handle submit event for create account
@@ -329,9 +379,20 @@ export default {
       e.preventDefault(); //prevent default form submit form the browser
       this.$refs.editAccountModal.hide(); //hide the modal when submitted
       const payload = {
-        name: this.editAccountForm.name,
+        currency: this.editAccountForm.currency,
       };
       this.RESTupdateAccount(payload, this.editAccountForm.id);
+      this.initForm();
+    },
+
+    // Handle submit event for edit account
+    onSubmitUpdateCountry(e) {
+      e.preventDefault(); //prevent default form submit form the browser
+      this.$refs.editAccountModal.hide(); //hide the modal when submitted
+      const payload = {
+        country: this.editAccountForm.country,
+      };
+      this.RESTupdateAccountCountry(payload, this.editAccountForm.id);
       this.initForm();
     },
 
