@@ -316,7 +316,7 @@ export default {
         password: encryptedPassword,
         currency: this.createAccountForm.currency,
         country: this.createAccountForm.country,
-        balance: 0,
+        balance: 5000,
         transactions: "",
         main_account: true,
       };
