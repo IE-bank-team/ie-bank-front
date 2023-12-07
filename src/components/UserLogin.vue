@@ -198,12 +198,7 @@ export default {
 }
 
 .login .bg {
-  background: linear-gradient(
-    180deg,
-    rgb(5, 117, 230) 0%,
-    rgb(2.46, 40.69, 137.58) 84.79%,
-    rgb(2, 27, 121) 100%
-  );
+  background: #4a79fd;
   height: 900px;
   left: 207px;
   position: absolute;
@@ -226,7 +221,7 @@ export default {
 
 .login .ellipse {
   border: 1px solid;
-  border-color: #0575e6;
+  border-color: #032649;
   border-radius: 278.5px;
   height: 557px;
   left: 81px;
@@ -237,7 +232,7 @@ export default {
 
 .login .ellipse-2 {
   border: 1px solid;
-  border-color: #0575e6;
+  border-color: #042c53;
   border-radius: 278.5px;
   height: 557px;
   left: 0;
@@ -295,7 +290,7 @@ export default {
 
 .login .div-wrapper {
   align-items: center;
-  background-color: #0575e6;
+  background-color: #03294f;
   border-radius: 30px;
   display: inline-flex;
   flex: 0 0 auto;
@@ -515,5 +510,9 @@ export default {
   letter-spacing: 0;
   line-height: normal;
   text-decoration: none;
+}
+
+.email-address {
+  color: black;
 }
 </style>
