@@ -31,7 +31,7 @@
             <div class="title">
               <div class="text-wrapper-3">Admin Login</div>
               <div class="text-wrapper-4">Welcome Back!</div>
-              <div class="text-wrapper-5">Forgot Password</div>
+              <!-- <div class="text-wrapper-5">Forgot Password</div> -->
             </div>
             <button class="button">
               <div class="placeholder">
@@ -60,7 +60,7 @@
               <div class="placeholder-3">
                 <input
                   class="email-address"
-                  placeholder="Email Address"
+                  placeholder="Username"
                   type="text"
                   id="username"
                   v-model="username"
