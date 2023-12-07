@@ -18,7 +18,12 @@
               </div>
               <div class="div-wrapper">
                 <div class="text-wrapper-2" style="cursor: pointer">
-                  Read More
+                  <a
+                    class="link_1"
+                    target="_blank"
+                    href="https://github.com/IE-bank-team/ie-bank-infra-new/wiki/IE-Bank-App-MVP-%E2%80%90-Project-Wiki"
+                    >Read More</a
+                  >
                 </div>
               </div>
             </div>
@@ -490,5 +495,25 @@ export default {
   width: 201px;
   height: 30px;
   margin-top: -5px;
+}
+
+.link_1 {
+  color: #ffffff;
+  font-family: "Poppins", Helvetica;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: normal;
+  text-decoration: none;
+}
+
+.link_1:hover {
+  color: #ffffff;
+  font-family: "Poppins", Helvetica;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: normal;
+  text-decoration: none;
 }
 </style>
