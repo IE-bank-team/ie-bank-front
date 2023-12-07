@@ -1,5 +1,5 @@
 <template>
-  <div class="login" style="margin-top: -100px">
+  <div class="login" style="margin-top: -80px">
     <div class="div">
       <div class="left-content">
         <div class="overlap">
