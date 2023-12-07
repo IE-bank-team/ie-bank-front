@@ -19,13 +19,25 @@
           >
             Create Account
           </button>
-          <!-- <br /> -->
+          <br />
+          <br />
+
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            v-b-modal.transfer-modal
+          >
+            Transfer money between personal accounts
+          </button>
+          <br />
+          <br />
+
           <button
             type="button"
             class="btn btn-secondary btn-sm"
-            v-b-modal.transfer-modal
+            v-b-modal.transfer-other-modal
           >
-            Transfer money between accounts
+            Transfer money to other user account
           </button>
           <br />
           <br />
@@ -243,6 +255,60 @@
           <b-button type="submit" variant="outline-info">Submit</b-button>
         </b-form>
       </b-modal>
+
+      <b-modal
+        ref="transferBalanceToOtherUserModal"
+        id="transfer-other-modal"
+        title="Transfer money to other user account"
+        hide-backdrop
+        hide-footer
+      >
+        <b-form @submit="onSubmitTransferBalanceOtherUser" class="w-100">
+          <b-form-group
+            id="form-from-group"
+            label="Transfer from: (Enter account number)"
+            label-for="form-from-input"
+          >
+            <b-form-input
+              id="form-from-input"
+              type="text"
+              v-model="transferBalanceToOtherUserForm.from"
+              placeholder="Account Number"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-form-group
+            id="form-to-group"
+            label="Transfer to: (Enter account number)"
+            label-for="form-to-input"
+          >
+            <b-form-input
+              id="form-to-input"
+              type="text"
+              v-model="transferBalanceToOtherUserForm.to"
+              placeholder="Account Number"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-form-group
+            id="form-amount-group"
+            label="Amount:"
+            label-for="form-amount-input"
+          >
+            <b-form-input
+              id="form-amount-input"
+              type="text"
+              v-model="transferBalanceToOtherUserForm.balance"
+              placeholder="amount"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-button type="submit" variant="outline-info">Submit</b-button>
+        </b-form>
+      </b-modal>
       <!-- End of Modal for Create Account-->
       <!-- Start of Modal for Edit Account-->
       <b-modal
@@ -281,6 +347,7 @@ export default {
   name: "UserPage",
   data() {
     return {
+      allAccounts: [],
       accounts: [],
       mainAccount: [],
       env_var_file_name: process.env.VUE_APP_ENV_VAR_FILE_NAME,
@@ -292,6 +359,11 @@ export default {
         country: "",
       },
       transferBalanceForm: {
+        from: "",
+        to: "",
+        balance: "",
+      },
+      transferBalanceToOtherUserForm: {
         from: "",
         to: "",
         balance: "",
@@ -352,6 +424,21 @@ export default {
         });
     },
 
+    RESTgetAllAccounts() {
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
+
+      // Return the axios promise directly
+      return axios
+        .get(path)
+        .then((response) => {
+          this.allAccounts = response.data.accounts;
+          console.log("all accounts", this.allAccounts);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
     RESTgetMainAccount() {
       const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
 
@@ -397,6 +484,7 @@ export default {
         .then((response) => {
           this.RESTgetAccounts();
           this.RESTgetMainAccount();
+          this.RESTgetAllAccounts();
           // For message alert
           this.message = "Account Created succesfully!";
           // To actually show the message
@@ -410,6 +498,7 @@ export default {
           console.error(error);
           this.RESTgetAccounts();
           this.RESTgetMainAccount();
+          this.RESTgetAllAccounts();
         });
     },
 
@@ -421,6 +510,8 @@ export default {
         .then((response) => {
           this.RESTgetAccounts();
           this.RESTgetMainAccount();
+          this.RESTgetAllAccounts();
+
           // For message alert
           this.message = "Account Updated succesfully!";
           // To actually show the message
@@ -434,6 +525,7 @@ export default {
           console.error(error);
           this.RESTgetAccounts();
           this.RESTgetMainAccount();
+          this.RESTgetAllAccounts();
         });
     },
 
@@ -493,6 +585,8 @@ export default {
                   // Third PUT request successful
                   this.RESTgetAccounts();
                   this.RESTgetMainAccount();
+                  this.RESTgetAllAccounts();
+
                   this.message = "Balance transferred successfully!";
                   this.showMessage = true;
                   setTimeout(() => {
@@ -503,6 +597,7 @@ export default {
                   console.error(errorMain);
                   this.RESTgetAccounts();
                   this.RESTgetMainAccount();
+                  this.RESTgetAllAccounts();
                 });
             })
             .catch((errorFrom) => {
@@ -510,6 +605,7 @@ export default {
               console.error(errorFrom);
               this.RESTgetAccounts();
               this.RESTgetMainAccount();
+              this.RESTgetAllAccounts();
             });
         })
         .catch((errorTo) => {
@@ -517,6 +613,99 @@ export default {
           console.error(errorTo);
           this.RESTgetAccounts();
           this.RESTgetMainAccount();
+          this.RESTgetAllAccounts();
+        });
+    },
+
+    RESTtransferBalanceToOtherUser(
+      payload,
+      fromAccount,
+      toAccount,
+      mainAccount
+    ) {
+      const pathFrom = `${process.env.VUE_APP_ROOT_URL}/accounts/${fromAccount.id}`;
+      const pathTo = `${process.env.VUE_APP_ROOT_URL}/accounts/${toAccount.id}`;
+      const pathMain = `${process.env.VUE_APP_ROOT_URL}/accounts/${mainAccount.id}`;
+
+      let newFromBalance = fromAccount.balance - payload.balance;
+      if (newFromBalance < 0) {
+        alert("Insufficient funds");
+        return;
+      }
+      let newToBalance = toAccount.balance + payload.balance;
+
+      console.log("new from balance", newFromBalance);
+      console.log("new to balance", newToBalance);
+
+      const payloadFrom = {
+        balance: newFromBalance,
+        transactions: "",
+      };
+
+      const payloadTo = {
+        balance: newToBalance,
+        transactions: "",
+      };
+
+      let mainTransactions = "";
+      mainTransactions += `${mainAccount.transactions}${payload.from} ${payload.to} ${payload.balance} ,`;
+
+      const payloadMain = {
+        balance: mainAccount.balance,
+        transactions: mainTransactions,
+      };
+
+      if (mainAccount.id === fromAccount.id) {
+        payloadMain.balance = newFromBalance;
+      } else if (mainAccount.id === toAccount.id) {
+        payloadMain.balance = newToBalance;
+      } else {
+        payloadMain.balance = mainAccount.balance;
+      }
+
+      axios
+        .put(pathTo, payloadTo)
+        .then((responseTo) => {
+          // First PUT request successful
+          axios
+            .put(pathFrom, payloadFrom)
+            .then((responseFrom) => {
+              // Second PUT request successful
+              axios
+                .put(pathMain, payloadMain) // Add your main path and payload here
+                .then((responseMain) => {
+                  // Third PUT request successful
+                  this.RESTgetAccounts();
+                  this.RESTgetMainAccount();
+                  this.RESTgetAllAccounts();
+
+                  this.message = "Balance transferred successfully!";
+                  this.showMessage = true;
+                  setTimeout(() => {
+                    this.showMessage = false;
+                  }, 3000);
+                })
+                .catch((errorMain) => {
+                  console.error(errorMain);
+                  this.RESTgetAccounts();
+                  this.RESTgetMainAccount();
+                  this.RESTgetAllAccounts();
+                });
+            })
+            .catch((errorFrom) => {
+              // Second PUT request failed
+              console.error(errorFrom);
+              this.RESTgetAccounts();
+              this.RESTgetMainAccount();
+              this.RESTgetAllAccounts();
+            });
+        })
+        .catch((errorTo) => {
+          // First PUT request failed
+          console.error(errorTo);
+          this.RESTgetAccounts();
+          this.RESTgetMainAccount();
+          this.RESTgetAllAccounts();
         });
     },
 
@@ -528,6 +717,8 @@ export default {
         .then((response) => {
           this.RESTgetAccounts();
           this.RESTgetMainAccount();
+          this.RESTgetAllAccounts();
+
           // For message alert
           this.message = "Account Deleted succesfully!";
           // To actually show the message
@@ -541,6 +732,7 @@ export default {
           console.error(error);
           this.RESTgetAccounts();
           this.RESTgetMainAccount();
+          this.RESTgetAllAccounts();
         });
     },
 
@@ -558,6 +750,9 @@ export default {
       this.transferBalanceForm.from = "";
       this.transferBalanceForm.to = "";
       this.transferBalanceForm.balance = "";
+      this.transferBalanceToOtherUserForm.from = "";
+      this.transferBalanceToOtherUserForm.to = "";
+      this.transferBalanceToOtherUserForm.balance = "";
     },
 
     // Handle submit event for create account
@@ -581,7 +776,7 @@ export default {
     async onSubmitTransferBalance(e) {
       console.log("Transfer balance");
       e.preventDefault(); //prevent default form submit form the browser
-      this.$refs.addAccountModal.hide(); //hide the modal when submitted
+      this.$refs.transferBalanceModal.hide(); //hide the modal when submitted
       const payload = {
         from: this.transferBalanceForm.from,
         to: this.transferBalanceForm.to,
@@ -618,6 +813,60 @@ export default {
 
       if (this.isValid(payload)) {
         this.RESTtransferBalance(payload, fromAccount, toAccount, mainAccount);
+        this.initForm();
+      } else {
+        alert("Invalid input");
+      }
+    },
+
+    // Handle submit event for transfer balance
+    async onSubmitTransferBalanceOtherUser(e) {
+      console.log("Transfer balance");
+      e.preventDefault(); //prevent default form submit form the browser
+      this.$refs.transferBalanceToOtherUserModal.hide(); //hide the modal when submitted
+      const payload = {
+        from: this.transferBalanceToOtherUserForm.from,
+        to: this.transferBalanceToOtherUserForm.to,
+        balance: parseInt(this.transferBalanceToOtherUserForm.balance, 10),
+      };
+
+      await this.RESTgetFromToAccounts();
+      console.log("from - to", this.accounts);
+      await this.RESTgetAllAccounts();
+      console.log("from - to for all", this.allAccounts);
+
+      let fromAccount = null;
+      this.accounts.forEach((obj) => {
+        if (obj.account_number === payload.from) {
+          fromAccount = obj;
+        }
+      });
+
+      let toAccount = null;
+      this.allAccounts.forEach((obj) => {
+        if (obj.account_number === payload.to) {
+          toAccount = obj;
+        }
+      });
+
+      let mainAccount = null;
+      this.accounts.forEach((obj) => {
+        if (obj.main_account === true) {
+          mainAccount = obj;
+        }
+      });
+
+      console.log("from account", fromAccount);
+      console.log("to account", toAccount);
+      console.log("main account", mainAccount);
+
+      if (this.isValid(payload)) {
+        this.RESTtransferBalanceToOtherUser(
+          payload,
+          fromAccount,
+          toAccount,
+          mainAccount
+        );
         this.initForm();
       } else {
         alert("Invalid input");
@@ -665,6 +914,7 @@ export default {
 
     await this.RESTgetAccounts();
     await this.RESTgetMainAccount();
+    await this.RESTgetAllAccounts();
   },
   computed: {
     username() {
