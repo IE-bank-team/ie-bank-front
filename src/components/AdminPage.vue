@@ -73,6 +73,8 @@
               </tr>
             </tbody>
           </table>
+          <br /><br />
+          <br /><br />
           <footer class="text-center">
             Copyright &copy; All Rights Reserved.
           </footer>
@@ -198,6 +200,11 @@
       </b-modal>
       <!-- End of Modal for Edit Account-->
     </div>
+    <br /><br />
+    <br /><br />
+    <br /><br />
+    <br /><br />
+    <br /><br />
   </div>
 </template>
 
