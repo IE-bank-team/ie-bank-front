@@ -77,6 +77,14 @@ jobs:
         with:
           app-name: ${{ env.FRONTEND_WEBAPP_DEV }}
           package: .
+      - name: Get Application Insights Instrumentation Key for Dev
+        run: |
+              npm install
+              APPINSIGHTS_KEY_DEV=$(az monitor app-insights component show --app group1-ai --resource-group aguadamillas_students_1 --query instrumentationKey -o tsv)
+              echo "VUE_APP_APPINSIGHTS_KEY=$APPINSIGHTS_KEY_DEV" > .env.development.local
+              npm run build -- --mode development --dest dist-dev
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Post deployment status to Slack
         id: slack-notification
@@ -110,6 +118,14 @@ jobs:
         with:
           app-name: ${{ env.FRONTEND_WEBAPP_UAT }}
           package: .
+      - name: build for uat
+        run: |
+            npm install
+            APPINSIGHTS_KEY_UAT=$(az monitor app-insights component show --app group1-ai-uat --resource-group aguadamillas_students_1 --query instrumentationKey -o tsv)
+            echo "VUE_APP_APPINSIGHTS_KEY=$APPINSIGHTS_KEY_UAT" > .env.uat.local
+            npm run build -- --mode uat --dest dist-uat
+        env:
+            AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       
       - name: Post deployment status to Slack
         id: slack-notification
