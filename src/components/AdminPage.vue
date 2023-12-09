@@ -372,8 +372,8 @@ export default {
         name: this.createAccountForm.name,
         password: encryptedPassword,
         currency: this.createAccountForm.currency,
-        country: this.createAccountForm.country,
         balance: 5000,
+        country: this.createAccountForm.country,
         transactions: "",
         main_account: true,
       };
