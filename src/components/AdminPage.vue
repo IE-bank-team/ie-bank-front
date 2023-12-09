@@ -241,7 +241,7 @@ export default {
 
     //GET function
     RESTgetAccounts() {
-      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/`;
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
       axios
         .get(path)
         .then((response) => {
@@ -255,7 +255,7 @@ export default {
 
     // POST function
     RESTcreateAccount(payload) {
-      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/`;
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
       axios
         .post(path, payload)
         .then((response) => {
