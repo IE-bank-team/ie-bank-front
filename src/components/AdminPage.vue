@@ -254,13 +254,13 @@ export default {
     },
 
     // POST function
-    RESTcreateAccount(payload) {
-      const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
+    async RESTcreateAccount(payload) {
+      const path = await `${process.env.VUE_APP_ROOT_URL}/accounts`;
       axios
         .post(path, payload)
         .then((response) => {
           this.RESTgetAccounts();
-          // console.log(this.accounts);
+          console.log("accounts in create clg", this.accounts);
           // For message alert
           this.message = "Account Created succesfully!";
           // To actually show the message
