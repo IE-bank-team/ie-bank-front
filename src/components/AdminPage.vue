@@ -246,7 +246,7 @@ export default {
         .get(path)
         .then((response) => {
           this.accounts = response.data.accounts;
-          console.log(this.accounts);
+          // console.log(this.accounts);
         })
         .catch((error) => {
           console.error(error);
@@ -260,7 +260,7 @@ export default {
         .post(path, payload)
         .then((response) => {
           this.RESTgetAccounts();
-          console.log(this.accounts);
+          // console.log(this.accounts);
           // For message alert
           this.message = "Account Created succesfully!";
           // To actually show the message

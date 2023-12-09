@@ -417,7 +417,7 @@ export default {
           this.accounts = this.accounts.filter(
             (account) => account.name === this.username
           );
-          console.log(this.accounts);
+          // console.log(this.accounts);
         })
         .catch((error) => {
           console.error(error);
@@ -432,7 +432,7 @@ export default {
         .get(path)
         .then((response) => {
           this.allAccounts = response.data.accounts;
-          console.log("all accounts", this.allAccounts);
+          // console.log("all accounts", this.allAccounts);
         })
         .catch((error) => {
           console.error(error);
@@ -451,7 +451,7 @@ export default {
             (account) =>
               account.name === this.username && account.main_account === true
           );
-          console.log(this.mainAccount);
+          // console.log(this.mainAccount);
         })
         .catch((error) => {
           console.error(error);
@@ -469,7 +469,7 @@ export default {
           this.accounts = this.accounts.filter(
             (account) => account.name === this.username
           );
-          console.log(`from to accounts: ${this.accounts}`);
+          // console.log(`from to accounts: ${this.accounts}`);
         })
         .catch((error) => {
           console.error(error);
@@ -542,8 +542,8 @@ export default {
       }
       let newToBalance = toAccount.balance + payload.balance;
 
-      console.log("new from balance", newFromBalance);
-      console.log("new to balance", newToBalance);
+      // console.log("new from balance", newFromBalance);
+      // console.log("new to balance", newToBalance);
 
       const payloadFrom = {
         balance: newFromBalance,
@@ -634,8 +634,8 @@ export default {
       }
       let newToBalance = toAccount.balance + payload.balance;
 
-      console.log("new from balance", newFromBalance);
-      console.log("new to balance", newToBalance);
+      // console.log("new from balance", newFromBalance);
+      // console.log("new to balance", newToBalance);
 
       const payloadFrom = {
         balance: newFromBalance,
@@ -774,7 +774,7 @@ export default {
 
     // Handle submit event for transfer balance
     async onSubmitTransferBalance(e) {
-      console.log("Transfer balance");
+      // console.log("Transfer balance");
       e.preventDefault(); //prevent default form submit form the browser
       this.$refs.transferBalanceModal.hide(); //hide the modal when submitted
       const payload = {
@@ -784,7 +784,7 @@ export default {
       };
 
       await this.RESTgetFromToAccounts();
-      console.log("from - to", this.accounts);
+      // console.log("from - to", this.accounts);
 
       let fromAccount = null;
       this.accounts.forEach((obj) => {
@@ -807,9 +807,9 @@ export default {
         }
       });
 
-      console.log("from account", fromAccount);
-      console.log("to account", toAccount);
-      console.log("main account", mainAccount);
+      // console.log("from account", fromAccount);
+      // console.log("to account", toAccount);
+      // console.log("main account", mainAccount);
 
       if (this.isValid(payload)) {
         this.RESTtransferBalance(payload, fromAccount, toAccount, mainAccount);
@@ -821,7 +821,7 @@ export default {
 
     // Handle submit event for transfer balance
     async onSubmitTransferBalanceOtherUser(e) {
-      console.log("Transfer balance");
+      // console.log("Transfer balance");
       e.preventDefault(); //prevent default form submit form the browser
       this.$refs.transferBalanceToOtherUserModal.hide(); //hide the modal when submitted
       const payload = {
@@ -831,9 +831,9 @@ export default {
       };
 
       await this.RESTgetFromToAccounts();
-      console.log("from - to", this.accounts);
+      // console.log("from - to", this.accounts);
       await this.RESTgetAllAccounts();
-      console.log("from - to for all", this.allAccounts);
+      // console.log("from - to for all", this.allAccounts);
 
       let fromAccount = null;
       this.accounts.forEach((obj) => {
@@ -856,9 +856,9 @@ export default {
         }
       });
 
-      console.log("from account", fromAccount);
-      console.log("to account", toAccount);
-      console.log("main account", mainAccount);
+      // console.log("from account", fromAccount);
+      // console.log("to account", toAccount);
+      // console.log("main account", mainAccount);
 
       if (this.isValid(payload)) {
         this.RESTtransferBalanceToOtherUser(
@@ -910,7 +910,7 @@ export default {
    * LIFECYClE HOOKS
    ***************************************************/
   async created() {
-    console.log("Username from Vuex store:", this.username);
+    // console.log("Username from Vuex store:", this.username);
 
     await this.RESTgetAccounts();
     await this.RESTgetMainAccount();
@@ -918,7 +918,7 @@ export default {
   },
   computed: {
     username() {
-      console.log(this.$store.state.username);
+      // console.log(this.$store.state.username);
       return this.$store.state.username;
     },
   },
