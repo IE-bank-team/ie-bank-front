@@ -162,7 +162,7 @@ export default {
     // this.accounts = this.accounts.filter(
     //   (account) => account.name === this.username
     // );
-    //console.log("Filtered users", this.accounts);
+    console.log("Filtered users", this.accounts);
   },
 };
 </script>
