@@ -79,11 +79,11 @@ jobs:
           app-name: ${{ env.FRONTEND_WEBAPP_DEV }}
           package: .
 
-      - name: "Deploy to Azure Web App"
+      - name: "Deploy to Static Site Name Dev"
         id: deploy-to-ssn
-        uses: azure/webapps-deploy@v2
+        uses: azure/static-web-apps-deploy@v1
         with:
-          app-name: ${{ env.STATIC_SITE_DEV }}
+          azure-static-web-app-name: ${{ env.STATIC_SITE_DEV }}
           package: .
 
   deploy-uat:
@@ -112,7 +112,7 @@ jobs:
 
       - name: "Deploy to Azure Web App"
         id: deploy-to-ssn-uat
-        uses: azure/webapps-deploy@v2
+        uses: azure/static-web-apps-deploy@v1
         with:
-          app-name: ${{ env.STATIC_SITE_UAT }}
+          azure-static-web-app-name: ${{ env.STATIC_SITE_UAT }}
           package: .
