@@ -128,13 +128,13 @@ export default {
 
       if (accountMatch) {
         // Decrypt the stored password for comparison
-        const decryptedPassword = CryptoJS.AES.decrypt(
-          accountMatch.password,
-          "secret-key"
-        ).toString(CryptoJS.enc.Utf8);
+        // const decryptedPassword = CryptoJS.AES.decrypt(
+        //   accountMatch.password,
+        //   "secret-key"
+        // ).toString(CryptoJS.enc.Utf8);
 
         // Compare the entered password with the decrypted password
-        if (enteredPassword === decryptedPassword) {
+        if (enteredPassword === accountMatch.password) {
           this.loggedIn = true;
           this.error = false;
           this.$store.dispatch("updateUsername", enteredUsername);
