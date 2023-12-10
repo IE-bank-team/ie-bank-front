@@ -73,6 +73,8 @@
               </tr>
             </tbody>
           </table>
+          <br /><br />
+          <br /><br />
           <footer class="text-center">
             Copyright &copy; All Rights Reserved.
           </footer>
@@ -156,29 +158,58 @@
       >
         <b-form @submit="onSubmitUpdate" class="w-100">
           <b-form-group
-            id="form-edit-name-group"
-            label="Account Name:"
-            label-for="form-edit-name-input"
+            id="form-edit-currency-group"
+            label="Account currency:"
+            label-for="form-edit-currency-input"
           >
             <b-form-input
-              id="form-edit-name-input"
+              id="form-edit-currency-input"
               type="text"
-              v-model="editAccountForm.name"
-              placeholder="Account Name"
+              v-model="editAccountForm.currency"
+              placeholder="Account currency"
               required
             >
             </b-form-input>
           </b-form-group>
-          <b-button type="submit" variant="outline-info">Update</b-button>
+          <b-button type="submit" variant="outline-info"
+            >Update Currency</b-button
+          >
+        </b-form>
+
+        <br />
+
+        <b-form @submit="onSubmitUpdateCountry" class="w-100">
+          <b-form-group
+            id="form-edit-country-group"
+            label="Account country:"
+            label-for="form-edit-country-input"
+          >
+            <b-form-input
+              id="form-edit-country-input"
+              type="text"
+              v-model="editAccountForm.country"
+              placeholder="Account country"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+          <b-button type="submit" variant="outline-info"
+            >Update Country</b-button
+          >
         </b-form>
       </b-modal>
       <!-- End of Modal for Edit Account-->
     </div>
+    <br /><br />
+    <br /><br />
+    <br /><br />
+    <br /><br />
+    <br /><br />
   </div>
 </template>
 
 <script>
-import CryptoJS from "crypto-js";
+//import CryptoJS from "crypto-js";
 import axios from "axios";
 export default {
   name: "UserPage",
@@ -196,6 +227,8 @@ export default {
       editAccountForm: {
         id: "",
         name: "",
+        currency: "",
+        country: "",
       },
       showMessage: false,
       message: "",
@@ -245,7 +278,29 @@ export default {
 
     // Update function
     RESTupdateAccount(payload, accountId) {
-      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/${accountId}`;
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/${accountId}/currency`;
+      axios
+        .put(path, payload)
+        .then((response) => {
+          this.RESTgetAccounts();
+          // For message alert
+          this.message = "Account Updated succesfully!";
+          // To actually show the message
+          this.showMessage = true;
+          // To hide the message after 3 seconds
+          setTimeout(() => {
+            this.showMessage = false;
+          }, 3000);
+        })
+        .catch((error) => {
+          console.error(error);
+          this.RESTgetAccounts();
+        });
+    },
+
+    // Update function
+    RESTupdateAccountCountry(payload, accountId) {
+      const path = `${process.env.VUE_APP_ROOT_URL}/accounts/${accountId}/country`;
       axios
         .put(path, payload)
         .then((response) => {
@@ -298,40 +353,100 @@ export default {
       this.createAccountForm.currency = "";
       (this.createAccountForm.country = ""), (this.editAccountForm.id = "");
       this.editAccountForm.name = "";
+      this.editAccountForm.currency = "";
+      this.editAccountForm.country = "";
     },
+
+
+    // Handle submit event for create account
+        // EncryptString function
+    
+    
+    // encryptString(message, r, c){
+    //   message = message.split('');
+    //   let newStr = '';
+    //   let x = 0;
+    //   while(x < r){
+    //     newStr += message.filter(char => message.indexOf(char) % r === x).join('');
+    //     x++;
+    //   }
+    //   return newStr;
+    // },
+
+    encryptString(message, r, c) {
+    const salt = 'RandomSalt';
+    let saltedMessage = message + salt;
+    let newStr = '';
+    for (let i = 0; i < saltedMessage.length; i++) {
+      let charCode = (saltedMessage.charCodeAt(i) + i) % 128; // Keep ASCII within range
+      newStr += String.fromCharCode(charCode);
+    }
+
+    // Simplify this logic for easier reversal
+    return newStr.split('').reverse().join('');
+  },
+
+  decryptString(encryptedMessage, r, c) {
+    let reversedMessage = encryptedMessage.split('').reverse().join('');
+    
+    let originalMessage = '';
+    for (let i = 0; i < reversedMessage.length; i++) {
+      let charCode = (reversedMessage.charCodeAt(i) - i + 128) % 128; // Correct for negative values
+      originalMessage += String.fromCharCode(charCode);
+    }
+
+    // Remove the salt
+    return originalMessage.replace('RandomSalt', '');
+  },
+
 
     // Handle submit event for create account
     onSubmit(e) {
-      e.preventDefault(); //prevent default form submit form the browser
-      this.$refs.addAccountModal.hide(); //hide the modal when submitted
+    e.preventDefault();
+    this.$refs.addAccountModal.hide();
 
-      // Encrypt the password
-      const encryptedPassword = CryptoJS.AES.encrypt(
-        this.createAccountForm.password,
-        "secret-key"
-      ).toString();
+    const r = 5; 
+    const c = 3; 
 
-      const payload = {
-        name: this.createAccountForm.name,
-        password: encryptedPassword,
-        currency: this.createAccountForm.currency,
-        country: this.createAccountForm.country,
-        balance: 0,
-        transactions: "",
-        main_account: true,
-      };
-      this.RESTcreateAccount(payload);
-      this.initForm();
-    },
+    const encryptedPassword = this.encryptString(this.createAccountForm.password, r, c);
+    const decryptedPassword = this.decryptString(encryptedPassword, r, c);
+    console.log('encrypted Password:', encryptedPassword);
+    console.log('Decrypted Password:', decryptedPassword);
+
+    const payload = {
+      name: this.createAccountForm.name,
+      password: encryptedPassword,
+      currency: this.createAccountForm.currency,
+      country: this.createAccountForm.country,
+      balance: 5000,
+      transactions: "",
+      main_account: true,
+    };
+
+    this.RESTcreateAccount(payload);
+    this.initForm();
+  },
+
 
     // Handle submit event for edit account
     onSubmitUpdate(e) {
       e.preventDefault(); //prevent default form submit form the browser
       this.$refs.editAccountModal.hide(); //hide the modal when submitted
       const payload = {
-        name: this.editAccountForm.name,
+        currency: this.editAccountForm.currency,
       };
       this.RESTupdateAccount(payload, this.editAccountForm.id);
+      this.initForm();
+    },
+
+    // Handle submit event for edit account
+    onSubmitUpdateCountry(e) {
+      e.preventDefault(); //prevent default form submit form the browser
+      this.$refs.editAccountModal.hide(); //hide the modal when submitted
+      const payload = {
+        country: this.editAccountForm.country,
+      };
+      this.RESTupdateAccountCountry(payload, this.editAccountForm.id);
       this.initForm();
     },
 
