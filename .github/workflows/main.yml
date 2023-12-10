@@ -19,6 +19,8 @@ env:
   FRONTEND_WEBAPP_UAT: chiaradigi-fe-uat
   STATIC_SITE_DEV: chiaradigi-ssn-dev
   STATIC_SITE_UAT: chiaradigi-ssn-uat
+  AZURE_STATIC_WEB_APPS_API_TOKEN_DEV: "22fd6ee4cb6ebd8a6561d9273a40394f11b0e1e13ab3468d6357c5a0abab6f214-9016dab7-785e-4b37-96f9-d4d9c761ca6c010283357"
+  AZURE_STATIC_WEB_APPS_API_TOKEN_UAT: "0098182a5dd214e9df9737a6bf765b984954e4666615496f834c5079c36c87494-db4f731a-a7f5-455d-bceb-dbbc8fb7cfa3010283358"
 
 jobs:
   build:
@@ -55,7 +57,7 @@ jobs:
           name: node-app-uat
           path: dist-uat/
 
-  deploy-dev:
+  deploy-dev-fe:
     runs-on: ubuntu-latest
     needs: build
     environment:
@@ -79,14 +81,7 @@ jobs:
           app-name: ${{ env.FRONTEND_WEBAPP_DEV }}
           package: .
 
-      - name: "Deploy to Static Site Name Dev"
-        id: deploy-to-ssn
-        uses: azure/static-web-apps-deploy@v1
-        with:
-          azure-static-web-app-name: ${{ env.STATIC_SITE_DEV }}
-          package: .
-
-  deploy-uat:
+  deploy-uat-fe:
     runs-on: ubuntu-latest
     needs: [build, deploy-dev]
     environment:
@@ -110,9 +105,29 @@ jobs:
           app-name: ${{ env.FRONTEND_WEBAPP_UAT }}
           package: .
 
-      - name: "Deploy to Azure Web App"
-        id: deploy-to-ssn-uat
-        uses: azure/static-web-apps-deploy@v1
+  deploy-dev-ssn:
+    runs-on: ubuntu-latest
+    name: Build and Deploy Static Site for Dev
+    steps:
+      - uses: actions/checkout@v4
         with:
-          azure-static-web-app-name: ${{ env.STATIC_SITE_UAT }}
-          package: .
+          submodules: true
+      - name: Build And Deploy
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9
+        with:
+          azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN_DEV }}
+          action: "upload"
+
+  deploy-uat-ssn:
+    runs-on: ubuntu-latest
+    name: Build and Deploy Static Site for UAT
+    needs: [deploy-dev-ssn] # Make sure the dev job completes before starting this
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Build And Deploy
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9
+        with:
+          azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN_UAT }}
+          action: "upload"
