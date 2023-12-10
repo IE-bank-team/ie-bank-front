@@ -88,7 +88,7 @@
 
 <script>
 import axios from "axios";
-import CryptoJS from "crypto-js";
+import axios from "axios";
 
 export default {
   data() {
@@ -118,31 +118,16 @@ export default {
     },
 
     async login() {
-      const enteredUsername = this.username;
-      const enteredPassword = this.password;
-
-      // Find the account by username
-      const accountMatch = this.accounts.find(
-        (account) => account.name === enteredUsername
-      );
-
-      if (accountMatch) {
-        // Decrypt the stored password for comparison
-        // const decryptedPassword = CryptoJS.AES.decrypt(
-        //   accountMatch.password,
-        //   "secret-key"
-        // ).toString(CryptoJS.enc.Utf8);
-
-        // Compare the entered password with the decrypted password
-        if (enteredPassword === accountMatch.password) {
-          this.loggedIn = true;
-          this.error = false;
-          this.$store.dispatch("updateUsername", enteredUsername);
-          this.$router.push("/user");
-        } else {
-          this.loggedIn = false;
-          this.error = true;
-        }
+      if (
+        this.accounts.some(
+          (account) =>
+            account.name === this.username && account.password === this.password
+        )
+      ) {
+        this.loggedIn = true;
+        this.error = false;
+        this.$store.dispatch("updateUsername", this.username); // Dispatch action to update username in store
+        this.$router.push("/user");
       } else {
         this.loggedIn = false;
         this.error = true;
