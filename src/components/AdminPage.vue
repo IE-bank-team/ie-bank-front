@@ -362,15 +362,16 @@ export default {
       e.preventDefault(); //prevent default form submit form the browser
       this.$refs.addAccountModal.hide(); //hide the modal when submitted
 
-      // Encrypt the password
-      const encryptedPassword = CryptoJS.AES.encrypt(
-        this.createAccountForm.password,
-        "secret-key"
-      ).toString();
+      // // Encrypt the password
+      // const encryptedPassword = CryptoJS.AES.encrypt(
+      //   this.createAccountForm.password,
+      //   "secret-key"
+      // ).toString();
 
       const payload = {
         name: this.createAccountForm.name,
-        password: encryptedPassword,
+        // password: encryptedPassword,
+        password: this.createAccountForm.password,
         currency: this.createAccountForm.currency,
         balance: 5000,
         country: this.createAccountForm.country,
