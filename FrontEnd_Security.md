@@ -5,11 +5,6 @@
 
 If you believe you have found a security vulnerability in our front-end application, we encourage you to let us know right away. We will investigate all legitimate reports and do our best to quickly fix the problem.
 
-Please submit your report via email to [security@example.com](mailto:security@example.com), including the following information:
-
-- Description of the vulnerability and its potential impact.
-- Steps to reproduce the issue or proof of concept.
-- Any relevant screenshots or logs.
 
 We request that you not publicly disclose the issue until we have had a chance to address it.
 
