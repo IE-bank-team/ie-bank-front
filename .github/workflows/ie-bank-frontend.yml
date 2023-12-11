@@ -31,9 +31,9 @@ jobs:
             echo "MODE=uat" >> $GITHUB_ENV
           elif [ "${{ github.event_name }}" = "push" ]; then
             if [ "${{ github.ref_name }}" = "main" ]; then
-              echo "MODE=prod" >> $GITHUB_ENV
-            else
               echo "MODE=development" >> $GITHUB_ENV
+            else
+              echo "MODE=prod" >> $GITHUB_ENV
             fi
           fi
 
