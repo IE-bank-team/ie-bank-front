@@ -14,7 +14,7 @@
 
 ## Overview
 
-This is the repository for the frontend code of the IE Bank web app
+This is the repository for the frontend e of the IE Bank web app
 
 ![IE Bank app logical view](images/ie-bank-app.png)
 
