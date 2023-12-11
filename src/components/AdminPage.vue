@@ -341,10 +341,35 @@ export default {
           this.RESTgetAccounts();
         });
     },
+    encryptString(message, r, c) {
+      const salt = "RandomSalt";
+      let saltedMessage = message + salt;
+      let newStr = "";
+      for (let i = 0; i < saltedMessage.length; i++) {
+        let charCode = (saltedMessage.charCodeAt(i) + i) % 128; // Keep ASCII within range
+        newStr += String.fromCharCode(charCode);
+      }
 
-    /***************************************************
+      // Simplify this logic for easier reversal
+      return newStr.split("").reverse().join("");
+    },
+
+    decryptString(encryptedMessage, r, c) {
+      let reversedMessage = encryptedMessage.split("").reverse().join("");
+
+      let originalMessage = "";
+      for (let i = 0; i < reversedMessage.length; i++) {
+        let charCode = (reversedMessage.charCodeAt(i) - i + 128) % 128; // Correct for negative values
+        originalMessage += String.fromCharCode(charCode);
+      }
+
+      // Remove the salt
+      return originalMessage.replace("RandomSalt", "");
+    },
+
+    /*****************
      * FORM MANAGEMENT
-     * *************************************************/
+     * *****************/
 
     // Initialize forms empty
     initForm() {
@@ -368,10 +393,24 @@ export default {
       //   "secret-key"
       // ).toString();
 
+      // Define values for r and c
+      const r = 5; // example value
+      const c = 3; // example value
+
+      // Encrypt the password
+      const encryptedPassword = this.encryptString(
+        this.createAccountForm.password,
+        r,
+        c
+      );
+      const decryptedPassword = this.decryptString(encryptedPassword, r, c);
+      console.log("encrypted Password:", encryptedPassword);
+      console.log("Decrypted Password:", decryptedPassword);
+
       const payload = {
         name: this.createAccountForm.name,
-        // password: encryptedPassword,
-        password: this.createAccountForm.password,
+        password: encryptedPassword,
+
         currency: this.createAccountForm.currency,
         balance: 5000,
         country: this.createAccountForm.country,

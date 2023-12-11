@@ -116,11 +116,28 @@ export default {
         });
     },
 
-    async login() {
+    decryptString(encryptedMessage, r, c) {
+      let reversedMessage = encryptedMessage.split("").reverse().join("");
+
+      let originalMessage = "";
+      for (let i = 0; i < reversedMessage.length; i++) {
+        let charCode = (reversedMessage.charCodeAt(i) - i + 128) % 128;
+        originalMessage += String.fromCharCode(charCode);
+      }
+
+      // Remove the salt
+      return originalMessage.replace("RandomSalt", "");
+    },
+
+    login() {
+      const r = 5; // The same r value used in encryption
+      const c = 3; // The same c value used in encryption
+
       if (
         this.accounts.some(
           (account) =>
-            account.name === this.username && account.password === this.password
+            account.name === this.username &&
+            this.decryptString(account.password, r, c) === this.password
         )
       ) {
         this.loggedIn = true;
