@@ -25,24 +25,20 @@ jobs:
           node-version: "18.x"
           cache: "npm"
 
-      - name: "Set variables based on event"
+      - name: Set environment variable based on event
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "MODE=uat" >> $GITHUB_ENV
-          elif [ "${{ github.event_name }}" = "push" ]; then
-            if [ "${{ github.ref_name }}" = "main" ]; then
-              echo "MODE=development" >> $GITHUB_ENV
-            else
-              echo "MODE=prod" >> $GITHUB_ENV
-            fi
+          else
+            echo "MODE=development" >> $GITHUB_ENV
           fi
 
-      - name: npm install, build, and test for dev
+      - name: npm install, build, and test
         run: |
           npm install
           npm run build -- --mode ${{ env.MODE }}
 
-      - name: Upload artifact for deployment dev job
+      - name: Upload artifact for deployment
         uses: actions/upload-artifact@v3
         with:
           name: node-app-${{ env.MODE }}
@@ -56,19 +52,14 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: "Set variables based on event"
+      - name: Set environment variable based on event
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "AZURE_WEBAPP_NAME=top8-fe-uat" >> $GITHUB_ENV
             echo "MODE=uat" >> $GITHUB_ENV
-          elif [ "${{ github.event_name }}" = "push" ]; then
-            if [ "${{ github.ref_name }}" = "main" ]; then
-              echo "AZURE_WEBAPP_NAME=top8-fe-prod" >> $GITHUB_ENV
-              echo "MODE=prod" >> $GITHUB_ENV
-            else
-              echo "AZURE_WEBAPP_NAME=top8-fe-dev" >> $GITHUB_ENV
-              echo "MODE=development" >> $GITHUB_ENV
-            fi
+          else
+            echo "AZURE_WEBAPP_NAME=top8-fe-dev" >> $GITHUB_ENV
+            echo "MODE=development" >> $GITHUB_ENV
           fi
 
       - name: Download artifact from build job
